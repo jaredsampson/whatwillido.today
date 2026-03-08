@@ -204,10 +204,9 @@
     let START = new Date(2025, 0, 20);
     let END   = new Date(2029, 0, 20);
 
-    const MONTH_NAMES = [
-      'jan','feb','mar','apr','may','jun',
-      'jul','aug','sep','oct','nov','dec'
-    ];
+    const MONTH_NAMES = Array.from({ length: 12 }, (_, i) =>
+      new Date(2000, i, 1).toLocaleDateString(undefined, { month: 'short' }).toLowerCase()
+    );
 
     const DAY_COLS = 37;
 
