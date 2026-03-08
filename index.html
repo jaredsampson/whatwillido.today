@@ -147,6 +147,22 @@
       cursor: default;
     }
 
+    /* Day modal */
+    #day-modal {
+      position: fixed;
+      background: white;
+      border: 1px solid #d0d0d0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+      padding: 7px 11px;
+      font-family: -apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      z-index: 100;
+      line-height: 1.7;
+    }
+    #day-modal.hidden { display: none; }
+    .modal-dow  { font-size: 8px; color: #999; text-transform: lowercase; }
+    .modal-date { font-size: 11px; color: #333; }
+    .modal-rel  { font-size: 8px; color: #5a9fd4; }
+
     /* Empty day cells: no border, no shading */
     td.empty {
       border: none;
@@ -167,6 +183,12 @@
   <div class="page-header">
     <h1>what will i do today?</h1>
   </div>
+  <div id="day-modal" class="hidden">
+    <div class="modal-dow"></div>
+    <div class="modal-date"></div>
+    <div class="modal-rel"></div>
+  </div>
+
   <div class="calendar-wrap">
     <div class="calendar-inner">
       <div class="date-range">
@@ -236,6 +258,45 @@
       try { input.showPicker(); } catch(e) {}
     }
 
+    function showModal(td, y, m, day) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const date = new Date(y, m, day);
+      const diff = Math.round((date - today) / 86400000);
+
+      let relative;
+      if      (diff ===  0) relative = 'today';
+      else if (diff ===  1) relative = 'tomorrow';
+      else if (diff === -1) relative = 'yesterday';
+      else if (diff  >   0) relative = `in ${diff} days`;
+      else                  relative = `${-diff} days ago`;
+
+      const modal = document.getElementById('day-modal');
+      modal.querySelector('.modal-dow').textContent  = date.toLocaleDateString(undefined, { weekday: 'long' });
+      modal.querySelector('.modal-date').textContent = formatDisplay(date);
+      modal.querySelector('.modal-rel').textContent  = relative;
+
+      // Position to the right of the cell; flip left if too close to viewport edge
+      const rect = td.getBoundingClientRect();
+      const gap  = 5;
+      const mw   = 130;
+      let left = rect.right + gap;
+      if (left + mw > window.innerWidth - 8) left = rect.left - mw - gap;
+      let top = rect.top + (rect.height - modal.offsetHeight) / 2;
+      top = Math.max(8, Math.min(top, window.innerHeight - modal.offsetHeight - 8));
+
+      modal.style.left = left + 'px';
+      modal.style.top  = top  + 'px';
+      modal.classList.remove('hidden');
+    }
+
+    document.addEventListener('click', () => {
+      document.getElementById('day-modal').classList.add('hidden');
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') document.getElementById('day-modal').classList.add('hidden');
+    });
+
     function generateCalendar() {
       const TODAY = new Date();
       TODAY.setHours(0, 0, 0, 0);
@@ -276,6 +337,7 @@
               const date = new Date(y, m, day);
               if (date >= START && date <= END) {
                 td.textContent = day;
+                td.addEventListener('click', e => { e.stopPropagation(); showModal(td, y, m, day); });
                 if (date.getTime() === TODAY.getTime()) {
                   td.classList.add('today');
                 } else if (date < TODAY) {
