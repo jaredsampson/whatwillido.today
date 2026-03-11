@@ -20,7 +20,6 @@
     h1 {
       font-size: 16px;
       font-weight: normal;
-      font-family: -apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif;
       letter-spacing: 0.5px;
       color: #444;
     }
@@ -28,16 +27,57 @@
     .calendar-inner {
       display: flex;
       flex-direction: column;
-      align-items: center;
+      align-items: stretch;
     }
 
     .date-range {
+      position: relative;
+      text-align: center;
       font-size: 10px;
       font-family: -apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif;
       color: #888;
       white-space: nowrap;
+      line-height: 22px;
       margin-bottom: 4px;
     }
+
+    .settings-gear {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .settings-modal {
+      position: absolute;
+      top: calc(100% + 4px);
+      right: 0;
+      background: white;
+      border: 1px solid #d0d0d0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+      padding: 8px 12px;
+      z-index: 100;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+    .settings-modal.hidden { display: none; }
+    .settings-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .settings-label { color: #666; }
+    .settings-options { display: flex; gap: 6px; }
+    .settings-opt {
+      color: #bbb;
+      cursor: pointer;
+    }
+    .settings-opt:hover { color: #555; }
+    .settings-opt.active { color: #333; font-weight: 600; }
 
     .date-link {
       color: #5a9fd4;
@@ -195,6 +235,19 @@
         <span class="date-link" id="start-display"></span>
         <span> – </span>
         <span class="date-link" id="end-display"></span>
+        <button class="settings-gear" id="settings-gear" title="Settings">
+          <img src="gear.png" width="14" height="14" alt="Settings">
+        </button>
+        <div id="settings-modal" class="settings-modal hidden">
+          <div class="settings-row">
+            <span class="settings-label">dark mode</span>
+            <span class="settings-options">
+              <span class="settings-opt">on</span>
+              <span class="settings-opt active">off</span>
+              <span class="settings-opt">auto</span>
+            </span>
+          </div>
+        </div>
       </div>
       <table id="cal"></table>
     </div>
@@ -291,10 +344,20 @@
 
     document.addEventListener('click', () => {
       document.getElementById('day-modal').classList.add('hidden');
+      document.getElementById('settings-modal').classList.add('hidden');
     });
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') document.getElementById('day-modal').classList.add('hidden');
+      if (e.key === 'Escape') {
+        document.getElementById('day-modal').classList.add('hidden');
+        document.getElementById('settings-modal').classList.add('hidden');
+      }
     });
+
+    document.getElementById('settings-gear').addEventListener('click', e => {
+      e.stopPropagation();
+      document.getElementById('settings-modal').classList.toggle('hidden');
+    });
+    document.getElementById('settings-modal').addEventListener('click', e => e.stopPropagation());
 
     function generateCalendar() {
       const TODAY = new Date();
