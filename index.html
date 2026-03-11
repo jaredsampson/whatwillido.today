@@ -89,35 +89,6 @@
       --gear-filter:         brightness(1.8);
     }
 
-    @media (prefers-color-scheme: dark) {
-      [data-theme="auto"] {
-        --bg:                  #1c1c1e;
-        --text:                #c8c8c8;
-        --text-mid:            #b0b0b0;
-        --text-dim:            #666;
-        --text-muted:          #484848;
-        --text-month:          #aaa;
-        --border:              #444444;
-        --border-strong:       #505050;
-        --weekend-bg:          #2e2e2e;
-        --hover-bg:            #1e3040;
-        --hover-shadow:        #305060;
-        --today-bg:            #2d2700;
-        --today-shadow:        #c8a800;
-        --past:                #444;
-        --modal-bg:            #242424;
-        --modal-border:        #3c3c3c;
-        --modal-dow:           #777;
-        --modal-date:          #c8c8c8;
-        --settings-label:      #777;
-        --settings-opt:        #505050;
-        --settings-opt-hover:  #aaa;
-        --settings-opt-active: #ccc;
-        --link:                #5a9fd4;
-        --link-hover:          #7ab8e8;
-        --gear-filter:         brightness(1.8);
-      }
-    }
 
     /* ── Base ──────────────────────────────────────────────────── */
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -396,15 +367,26 @@
     }
 
     // ── Dark mode ───────────────────────────────────────────────
+    const darkMQ = window.matchMedia('(prefers-color-scheme: dark)');
+
+    function applyTheme(mode) {
+      const resolved = mode === 'auto' ? (darkMQ.matches ? 'dark' : 'light') : mode;
+      document.documentElement.dataset.theme = resolved;
+    }
+
     function setTheme(mode) {
-      document.documentElement.dataset.theme = mode;
       localStorage.setItem('theme', mode);
-      document.querySelectorAll('.settings-opt').forEach(el => {
+      applyTheme(mode);
+      document.querySelectorAll('[data-theme]').forEach(el => {
         el.classList.toggle('active', el.dataset.theme === mode);
       });
     }
 
-    // Initialize from localStorage, defaulting to 'auto'
+    // Re-apply when system preference changes while 'auto' is selected
+    darkMQ.addEventListener('change', () => {
+      if (localStorage.getItem('theme') === 'auto') applyTheme('auto');
+    });
+
     setTheme(localStorage.getItem('theme') || 'auto');
 
     document.querySelectorAll('[data-theme]').forEach(el => {
