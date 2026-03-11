@@ -423,12 +423,14 @@
       const mw   = 130;
       let left = rect.right + gap;
       if (left + mw > window.innerWidth - 8) left = rect.left - mw - gap;
-      let top = rect.top + (rect.height - modal.offsetHeight) / 2;
-      top = Math.max(8, Math.min(top, window.innerHeight - modal.offsetHeight - 8));
+
+      modal.classList.remove('hidden');  // must be visible before measuring height
+      const mh = modal.offsetHeight;
+      let top = rect.top + (rect.height - mh) / 2;
+      top = Math.max(8, Math.min(top, window.innerHeight - mh - 8));
 
       modal.style.left = left + 'px';
       modal.style.top  = top  + 'px';
-      modal.classList.remove('hidden');
     }
 
     document.addEventListener('click', () => {
