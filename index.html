@@ -32,6 +32,31 @@
       --link:                #5a9fd4;
       --link-hover:          #3a7fb8;
       --gear-filter:         none;
+      /* size 2 = default */
+      --cell-w:    17px;
+      --cell-h:    16px;
+      --cell-font: 7.5px;
+      --lbl-font:  8px;
+      --lbl-yr-w:  30px;
+      --lbl-mo-w:  22px;
+    }
+
+    /* ── Size variables ────────────────────────────────────────── */
+    [data-size="1"] {
+      --cell-w: 14px; --cell-h: 13px; --cell-font: 6px;
+      --lbl-font: 7px; --lbl-yr-w: 26px; --lbl-mo-w: 18px;
+    }
+    [data-size="3"] {
+      --cell-w: 20px; --cell-h: 19px; --cell-font: 9px;
+      --lbl-font: 9px; --lbl-yr-w: 34px; --lbl-mo-w: 26px;
+    }
+    [data-size="4"] {
+      --cell-w: 23px; --cell-h: 22px; --cell-font: 10px;
+      --lbl-font: 10px; --lbl-yr-w: 38px; --lbl-mo-w: 30px;
+    }
+    [data-size="5"] {
+      --cell-w: 26px; --cell-h: 25px; --cell-font: 11px;
+      --lbl-font: 11px; --lbl-yr-w: 42px; --lbl-mo-w: 34px;
     }
 
     [data-theme="dark"] {
@@ -196,9 +221,9 @@
     }
 
     td {
-      width: 17px;
-      height: 16px;
-      font-size: 7.5px;
+      width: var(--cell-w);
+      height: var(--cell-h);
+      font-size: var(--cell-font);
       text-align: center;
       vertical-align: middle;
       border: 1px solid var(--border);
@@ -209,21 +234,21 @@
     }
 
     .lbl-year {
-      width: 30px;
+      width: var(--lbl-yr-w);
       border: none;
       text-align: right;
       padding-right: 5px;
-      font-size: 8px;
+      font-size: var(--lbl-font);
       color: var(--text-dim);
       vertical-align: middle;
     }
 
     .lbl-month {
-      width: 22px;
+      width: var(--lbl-mo-w);
       border: none;
       text-align: right;
       padding-right: 5px;
-      font-size: 8px;
+      font-size: var(--lbl-font);
       color: var(--text-month);
       vertical-align: middle;
     }
@@ -319,6 +344,16 @@
               <span class="settings-opt" data-theme="auto">auto</span>
             </span>
           </div>
+          <div class="settings-row">
+            <span class="settings-label">size</span>
+            <span class="settings-options" style="align-items:baseline">
+              <span class="settings-opt size-opt" data-size="1" style="font-size:8px">A</span>
+              <span class="settings-opt size-opt" data-size="2" style="font-size:10px">A</span>
+              <span class="settings-opt size-opt" data-size="3" style="font-size:12px">A</span>
+              <span class="settings-opt size-opt" data-size="4" style="font-size:14px">A</span>
+              <span class="settings-opt size-opt" data-size="5" style="font-size:16px">A</span>
+            </span>
+          </div>
         </div>
       </div>
       <table id="cal"></table>
@@ -366,8 +401,22 @@
     // Initialize from localStorage, defaulting to 'auto'
     setTheme(localStorage.getItem('theme') || 'auto');
 
-    document.querySelectorAll('.settings-opt').forEach(el => {
+    document.querySelectorAll('[data-theme]').forEach(el => {
       el.addEventListener('click', () => setTheme(el.dataset.theme));
+    });
+
+    function setSize(n) {
+      document.documentElement.dataset.size = n;
+      localStorage.setItem('size', n);
+      document.querySelectorAll('.size-opt').forEach(el => {
+        el.classList.toggle('active', el.dataset.size === String(n));
+      });
+    }
+
+    setSize(localStorage.getItem('size') || '2');
+
+    document.querySelectorAll('.size-opt').forEach(el => {
+      el.addEventListener('click', () => setSize(el.dataset.size));
     });
 
     // ── Date editing ────────────────────────────────────────────
