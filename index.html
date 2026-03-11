@@ -5,10 +5,98 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>what will i do today?</title>
   <style>
+    /* ── Theme variables ───────────────────────────────────────── */
+    :root {
+      --bg:                  white;
+      --text:                #333;
+      --text-mid:            #444;
+      --text-dim:            #888;
+      --text-muted:          #bbb;
+      --text-month:          #333;
+      --border:              #e2e2e2;
+      --border-strong:       #b0b0b0;
+      --weekend-bg:          #f0f0f0;
+      --hover-bg:            #d6e4ed;
+      --hover-shadow:        #8ab4c8;
+      --today-bg:            #fffacd;
+      --today-shadow:        #c8a800;
+      --past:                #bbb;
+      --modal-bg:            white;
+      --modal-border:        #d0d0d0;
+      --modal-dow:           #999;
+      --modal-date:          #333;
+      --settings-label:      #666;
+      --settings-opt:        #bbb;
+      --settings-opt-hover:  #555;
+      --settings-opt-active: #333;
+      --link:                #5a9fd4;
+      --link-hover:          #3a7fb8;
+      --gear-filter:         none;
+    }
+
+    [data-theme="dark"] {
+      --bg:                  #1c1c1e;
+      --text:                #c8c8c8;
+      --text-mid:            #b0b0b0;
+      --text-dim:            #666;
+      --text-muted:          #484848;
+      --text-month:          #aaa;
+      --border:              #444444;
+      --border-strong:       #505050;
+      --weekend-bg:          #242424;
+      --hover-bg:            #1e3040;
+      --hover-shadow:        #305060;
+      --today-bg:            #2d2700;
+      --today-shadow:        #c8a800;
+      --past:                #444;
+      --modal-bg:            #242424;
+      --modal-border:        #3c3c3c;
+      --modal-dow:           #777;
+      --modal-date:          #c8c8c8;
+      --settings-label:      #777;
+      --settings-opt:        #505050;
+      --settings-opt-hover:  #aaa;
+      --settings-opt-active: #ccc;
+      --link:                #5a9fd4;
+      --link-hover:          #7ab8e8;
+      --gear-filter:         brightness(1.8);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      [data-theme="auto"] {
+        --bg:                  #1c1c1e;
+        --text:                #c8c8c8;
+        --text-mid:            #b0b0b0;
+        --text-dim:            #666;
+        --text-muted:          #484848;
+        --text-month:          #aaa;
+        --border:              #444444;
+        --border-strong:       #505050;
+        --weekend-bg:          #242424;
+        --hover-bg:            #1e3040;
+        --hover-shadow:        #305060;
+        --today-bg:            #2d2700;
+        --today-shadow:        #c8a800;
+        --past:                #444;
+        --modal-bg:            #242424;
+        --modal-border:        #3c3c3c;
+        --modal-dow:           #777;
+        --modal-date:          #c8c8c8;
+        --settings-label:      #777;
+        --settings-opt:        #505050;
+        --settings-opt-hover:  #aaa;
+        --settings-opt-active: #ccc;
+        --link:                #5a9fd4;
+        --link-hover:          #7ab8e8;
+        --gear-filter:         brightness(1.8);
+      }
+    }
+
+    /* ── Base ──────────────────────────────────────────────────── */
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: white;
+      background: var(--bg);
       font-family: -apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
 
@@ -21,9 +109,10 @@
       font-size: 16px;
       font-weight: normal;
       letter-spacing: 0.5px;
-      color: #444;
+      color: var(--text-mid);
     }
 
+    /* ── Calendar controls ─────────────────────────────────────── */
     .calendar-inner {
       display: flex;
       flex-direction: column;
@@ -35,7 +124,7 @@
       text-align: center;
       font-size: 10px;
       font-family: -apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      color: #888;
+      color: var(--text-dim);
       white-space: nowrap;
       line-height: 22px;
       margin-bottom: 4px;
@@ -51,57 +140,49 @@
       padding: 0;
       cursor: pointer;
     }
+    .settings-gear img { filter: var(--gear-filter); }
 
     .settings-modal {
       position: absolute;
       top: calc(100% + 4px);
       right: 0;
-      background: white;
-      border: 1px solid #d0d0d0;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+      background: var(--modal-bg);
+      border: 1px solid var(--modal-border);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
       padding: 8px 12px;
       z-index: 100;
       font-size: 10px;
       white-space: nowrap;
     }
     .settings-modal.hidden { display: none; }
-    .settings-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .settings-label { color: #666; }
+    .settings-row { display: flex; align-items: center; gap: 10px; }
+    .settings-label { color: var(--settings-label); }
     .settings-options { display: flex; gap: 6px; }
-    .settings-opt {
-      color: #bbb;
-      cursor: pointer;
-    }
-    .settings-opt:hover { color: #555; }
-    .settings-opt.active { color: #333; font-weight: 600; }
+    .settings-opt { color: var(--settings-opt); cursor: pointer; }
+    .settings-opt:hover  { color: var(--settings-opt-hover); }
+    .settings-opt.active { color: var(--settings-opt-active); font-weight: 600; }
 
     .date-link {
-      color: #5a9fd4;
+      color: var(--link);
       text-decoration: underline;
       text-underline-offset: 2px;
       cursor: pointer;
     }
-
-    .date-link:hover {
-      color: #3a7fb8;
-    }
+    .date-link:hover { color: var(--link-hover); }
 
     input.date-input {
       font-size: 10px;
       font-family: inherit;
-      color: #5a9fd4;
+      color: var(--link);
       border: none;
-      border-bottom: 1px solid #5a9fd4;
+      border-bottom: 1px solid var(--link);
       background: none;
       outline: none;
       padding: 0;
       cursor: text;
     }
 
+    /* ── Calendar table ────────────────────────────────────────── */
     .calendar-wrap {
       overflow-x: auto;
       padding: 0 16px 20px;
@@ -120,8 +201,8 @@
       font-size: 7.5px;
       text-align: center;
       vertical-align: middle;
-      border: 1px solid #e2e2e2;
-      color: #333;
+      border: 1px solid var(--border);
+      color: var(--text);
       padding: 0;
       white-space: nowrap;
       overflow: hidden;
@@ -133,7 +214,7 @@
       text-align: right;
       padding-right: 5px;
       font-size: 8px;
-      color: #888;
+      color: var(--text-dim);
       vertical-align: middle;
     }
 
@@ -143,7 +224,7 @@
       text-align: right;
       padding-right: 5px;
       font-size: 8px;
-      color: #333;
+      color: var(--text-month);
       vertical-align: middle;
     }
 
@@ -165,58 +246,49 @@
     tr td:nth-child(22), tr td:nth-child(23),
     tr td:nth-child(29), tr td:nth-child(30),
     tr td:nth-child(36), tr td:nth-child(37) {
-      background-color: #f0f0f0;
+      background-color: var(--weekend-bg);
     }
 
-    /* Today */
     td.today {
       font-weight: bold;
-      box-shadow: inset 0 0 0 1.5px #c8a800;
-      background-color: #fffacd !important;
+      box-shadow: inset 0 0 0 1.5px var(--today-shadow);
+      background-color: var(--today-bg) !important;
     }
 
-    /* Past dates */
-    td.past {
-      color: #bbb;
-    }
+    td.past { color: var(--past); }
 
-    /* Hover highlight */
     td:not(.empty):hover {
-      background-color: #d6e4ed;
-      box-shadow: inset 0 0 0 1px #8ab4c8;
+      background-color: var(--hover-bg);
+      box-shadow: inset 0 0 0 1px var(--hover-shadow);
       cursor: default;
     }
 
-    /* Day modal */
+    td.empty {
+      border: none;
+      background: none !important;
+    }
+
+    tr.year-start td,
+    tr.year-start .lbl-year,
+    tr.year-start .lbl-month {
+      border-top: 1.5px solid var(--border-strong);
+    }
+
+    /* ── Day modal ─────────────────────────────────────────────── */
     #day-modal {
       position: fixed;
-      background: white;
-      border: 1px solid #d0d0d0;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+      background: var(--modal-bg);
+      border: 1px solid var(--modal-border);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
       padding: 7px 11px;
       font-family: -apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif;
       z-index: 100;
       line-height: 1.7;
     }
     #day-modal.hidden { display: none; }
-    .modal-dow  { font-size: 8px; color: #999; text-transform: lowercase; }
-    .modal-date { font-size: 11px; color: #333; }
-    .modal-rel  { font-size: 8px; color: #5a9fd4; }
-
-    /* Empty day cells: no border, no shading */
-    td.empty {
-      border: none;
-      background: none !important;
-    }
-
-    /* Year-group separator covers all columns including labels */
-    tr.year-start td {
-      border-top: 1.5px solid #b0b0b0;
-    }
-    tr.year-start .lbl-year,
-    tr.year-start .lbl-month {
-      border-top: 1.5px solid #b0b0b0;
-    }
+    .modal-dow  { font-size: 8px; color: var(--modal-dow); text-transform: lowercase; }
+    .modal-date { font-size: 11px; color: var(--modal-date); }
+    .modal-rel  { font-size: 8px; color: var(--link); }
   </style>
 </head>
 <body>
@@ -242,9 +314,9 @@
           <div class="settings-row">
             <span class="settings-label">dark mode</span>
             <span class="settings-options">
-              <span class="settings-opt">on</span>
-              <span class="settings-opt active">off</span>
-              <span class="settings-opt">auto</span>
+              <span class="settings-opt" data-theme="on">on</span>
+              <span class="settings-opt" data-theme="off">off</span>
+              <span class="settings-opt" data-theme="auto">auto</span>
             </span>
           </div>
         </div>
@@ -282,6 +354,23 @@
       return d.toLocaleDateString(undefined, { month: '2-digit', day: '2-digit', year: 'numeric' });
     }
 
+    // ── Dark mode ───────────────────────────────────────────────
+    function setTheme(mode) {
+      document.documentElement.dataset.theme = mode;
+      localStorage.setItem('theme', mode);
+      document.querySelectorAll('.settings-opt').forEach(el => {
+        el.classList.toggle('active', el.dataset.theme === mode);
+      });
+    }
+
+    // Initialize from localStorage, defaulting to 'auto'
+    setTheme(localStorage.getItem('theme') || 'auto');
+
+    document.querySelectorAll('.settings-opt').forEach(el => {
+      el.addEventListener('click', () => setTheme(el.dataset.theme));
+    });
+
+    // ── Date editing ────────────────────────────────────────────
     function makeEditable(spanEl, isStart) {
       const input = document.createElement('input');
       input.type = 'date';
@@ -310,6 +399,7 @@
       try { input.showPicker(); } catch(e) {}
     }
 
+    // ── Day modal ───────────────────────────────────────────────
     function showModal(td, y, m, day) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -328,7 +418,6 @@
       modal.querySelector('.modal-date').textContent = formatDisplay(date);
       modal.querySelector('.modal-rel').textContent  = relative;
 
-      // Position to the right of the cell; flip left if too close to viewport edge
       const rect = td.getBoundingClientRect();
       const gap  = 5;
       const mw   = 130;
@@ -359,6 +448,7 @@
     });
     document.getElementById('settings-modal').addEventListener('click', e => e.stopPropagation());
 
+    // ── Calendar generation ─────────────────────────────────────
     function generateCalendar() {
       const TODAY = new Date();
       TODAY.setHours(0, 0, 0, 0);
